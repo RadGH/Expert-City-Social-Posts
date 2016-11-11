@@ -1,4 +1,4 @@
-# Expert-City-Social-Posts
+# Expert City Social Posts
 
 Custom plugin for Expert City Network.
 
