@@ -1,0 +1,84 @@
+.profile-integration .social-button {
+	display: inline-block;
+	margin: 0;
+	padding: 0 10px 1px;
+
+	height: 28px;
+
+	color: #555;
+	text-decoration: none;
+	font-size: 13px;
+	line-height: 26px;
+
+	background: #f7f7f7;
+	box-shadow: none;
+
+	border: 1px solid #ccc;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+
+	vertical-align: top;
+	cursor: pointer;
+	-webkit-appearance: none;
+	border-radius: 0;
+	white-space: nowrap;
+}
+
+.profile-integration .social-button.social-button-disconnect {
+	background: #d54e21;
+	border-color: #802e13;
+	color: #ffffff;
+}
+
+.profile-integration .social-button.social-button-facebook {
+	background: #3b5998;
+	border-color: #213053;
+	color: #fff;
+}
+
+.profile-integration .social-button.social-button-twitter {
+	background: #1da1f2;
+	border-color: #16689e;
+	color: #fff;
+}
+
+.profile-integration .social-button.social-button-linkedin {
+	background: #0077b5;
+	border-color: #00496f;
+	color: #fff;
+}
+.acf-fields > .acf-field-581c06c64bad9, /* facebook checkbox */
+.acf-fields > .acf-field-581c06d94badb, /* twitter checkbox */
+.acf-fields > .acf-field-581c06e24badc { /* linkedin checkbox */
+	border: none;
+}
+
+.acf-fields > .acf-field-581c06c64bad9 .acf-label, /* facebook label */
+.acf-fields > .acf-field-581c06d94badb .acf-label, /* twitter label */
+.acf-fields > .acf-field-581c06e24badc .acf-label { /* linkedin label */
+	display: none;
+}
+
+/* Authorization page: Front-end */
+.ecsp-authorization-page table.form-table p {
+	margin: 10px 0;
+}
+
+.ecsp-authorization-page table.form-table th {
+	vertical-align: top;
+	font-weight: bold;
+	width: 120px;
+}
+
+.ecsp-authorization-page table.form-table td {
+	vertical-align: top;
+	padding: 0 15px;
+}
+
+
+.ecsp-authorization-page table.form-table p.description {
+	font-size: 12px;
+	font-style: italic;
+}

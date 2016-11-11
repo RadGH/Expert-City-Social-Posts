@@ -1,0 +1,231 @@
+[
+  {
+	"key": "group_581a9261ed475",
+	"title": "Social Posts Integration",
+	"fields": [
+	  {
+		"key": "field_581d36dee0356",
+		"label": "Authorization Page",
+		"name": "ecsp_authorization_page",
+		"type": "post_object",
+		"instructions": "Displays the social media authorizations on a front-end page, for signed in users. Without this, users must use their WordPress \"Edit Profile\" screen to authorize social networks.",
+		"required": 0,
+		"conditional_logic": 0,
+		"wrapper": {
+		  "width": "",
+		  "class": "",
+		  "id": ""
+		},
+		"post_type": [
+		  "page"
+		],
+		"taxonomy": [],
+		"allow_null": 0,
+		"multiple": 0,
+		"return_format": "object",
+		"ui": 1
+	  },
+	  {
+		"key": "field_581a92b89a1ff",
+		"label": "Facebook",
+		"name": "ecsp_facebook",
+		"type": "repeater",
+		"instructions": "Create an app with the \"publish_actions\" permission. You must submit the app for review before it can be used publicly.",
+		"required": 0,
+		"conditional_logic": 0,
+		"wrapper": {
+		  "width": "",
+		  "class": "",
+		  "id": ""
+		},
+		"collapsed": "",
+		"min": 1,
+		"max": 1,
+		"layout": "row",
+		"button_label": "Add Row",
+		"sub_fields": [
+		  {
+			"key": "field_581a97789a200",
+			"label": "App ID",
+			"name": "app_id",
+			"type": "text",
+			"instructions": "",
+			"required": "",
+			"conditional_logic": "",
+			"wrapper": {
+			  "width": "",
+			  "class": "",
+			  "id": ""
+			},
+			"default_value": "",
+			"placeholder": "",
+			"prepend": "",
+			"append": "",
+			"maxlength": ""
+		  },
+		  {
+			"key": "field_581a977e9a201",
+			"label": "Secret",
+			"name": "secret",
+			"type": "text",
+			"instructions": "",
+			"required": "",
+			"conditional_logic": "",
+			"wrapper": {
+			  "width": "",
+			  "class": "",
+			  "id": ""
+			},
+			"default_value": "",
+			"placeholder": "",
+			"prepend": "",
+			"append": "",
+			"maxlength": ""
+		  }
+		]
+	  },
+	  {
+		"key": "field_581a978e9a202",
+		"label": "Twitter",
+		"name": "ecsp_twitter",
+		"type": "repeater",
+		"instructions": "Not yet implemented!",
+		"required": 0,
+		"conditional_logic": 0,
+		"wrapper": {
+		  "width": "",
+		  "class": "",
+		  "id": ""
+		},
+		"collapsed": "",
+		"min": 1,
+		"max": 1,
+		"layout": "row",
+		"button_label": "Add Row",
+		"sub_fields": [
+		  {
+			"key": "field_581a978e9a203",
+			"label": "App ID",
+			"name": "app_id",
+			"type": "text",
+			"instructions": "",
+			"required": "",
+			"conditional_logic": "",
+			"wrapper": {
+			  "width": "",
+			  "class": "",
+			  "id": ""
+			},
+			"default_value": "",
+			"placeholder": "",
+			"prepend": "",
+			"append": "",
+			"maxlength": ""
+		  },
+		  {
+			"key": "field_581a978e9a204",
+			"label": "Secret",
+			"name": "secret",
+			"type": "text",
+			"instructions": "",
+			"required": "",
+			"conditional_logic": "",
+			"wrapper": {
+			  "width": "",
+			  "class": "",
+			  "id": ""
+			},
+			"default_value": "",
+			"placeholder": "",
+			"prepend": "",
+			"append": "",
+			"maxlength": ""
+		  }
+		]
+	  },
+	  {
+		"key": "field_581a97979a205",
+		"label": "LinkedIn",
+		"name": "ecsp_linkedin",
+		"type": "repeater",
+		"instructions": "Not yet implemented!",
+		"required": 0,
+		"conditional_logic": 0,
+		"wrapper": {
+		  "width": "",
+		  "class": "",
+		  "id": ""
+		},
+		"collapsed": "",
+		"min": 1,
+		"max": 1,
+		"layout": "row",
+		"button_label": "Add Row",
+		"sub_fields": [
+		  {
+			"key": "field_581a97979a206",
+			"label": "App ID",
+			"name": "app_id",
+			"type": "text",
+			"instructions": "",
+			"required": 0,
+			"conditional_logic": 0,
+			"wrapper": {
+			  "width": "",
+			  "class": "",
+			  "id": ""
+			},
+			"default_value": "",
+			"placeholder": "",
+			"prepend": "",
+			"append": "",
+			"maxlength": ""
+		  },
+		  {
+			"key": "field_581a97979a207",
+			"label": "Secret",
+			"name": "secret",
+			"type": "text",
+			"instructions": "",
+			"required": 0,
+			"conditional_logic": 0,
+			"wrapper": {
+			  "width": "",
+			  "class": "",
+			  "id": ""
+			},
+			"default_value": "",
+			"placeholder": "",
+			"prepend": "",
+			"append": "",
+			"maxlength": ""
+		  }
+		]
+	  }
+	],
+	"location": [
+	  [
+		{
+		  "param": "options_page",
+		  "operator": "==",
+		  "value": "acf-options-expert-city-authors"
+		}
+	  ],
+	  [
+		{
+		  "param": "options_page",
+		  "operator": "==",
+		  "value": "acf-options-expert-city-authors"
+		}
+	  ]
+	],
+	"menu_order": 10,
+	"position": "acf_after_title",
+	"style": "default",
+	"label_placement": "left",
+	"instruction_placement": "label",
+	"hide_on_screen": "",
+	"active": 1,
+	"description": ""
+  }
+]
