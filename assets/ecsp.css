@@ -82,3 +82,13 @@
 	font-size: 12px;
 	font-style: italic;
 }
+
+/* Connect networks message */
+.acf-field.acf-field-581c40ba26aba .acf-label {
+	display: none;
+}
+
+.acf-field.acf-field-581c40ba26aba p {
+	margin: 0;
+	font-size: 12px;
+}

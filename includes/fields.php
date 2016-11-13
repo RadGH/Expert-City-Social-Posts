@@ -116,22 +116,42 @@ function ecsp_disable_unhooked_sharing_fields( $field ) {
 		}
 	}else{
 		// 3) Configure social networks, hide network if no access token is given
+		$facebook_token = get_user_meta( $post_author, 'ecsp-facebook-access-token', true );
+		$twitter_token = get_user_meta( $post_author, 'ecsp-twitter-access-token', true );
+		$linkedin_token = get_user_meta( $post_author, 'ecsp-linkedin-access-token', true );
 
 		// Show message to configure access token
 		if ( $field['key'] == 'field_581c40ba26aba' ) {
-			// FACEBOOK ONLY FOR NOW
-			// TODO: ADD OTHER NETWORKS IN THE IF STATEMENT.
-			$facebook_token = get_user_meta( $post_author, 'ecsp-facebook-access-token', true );
-			if ( !$facebook_token ) {
+			// If a network is not yet connected, show the message.
+			if ( !$facebook_token || !$twitter_token || !$linkedin_token ) {
 				$field['conditional_logic'] = 0;
+
+				// Get an array of unconnected networks
+				$networks = array();
+				if ( !$facebook_token ) $networks[] = 'Facebook';
+				if ( !$twitter_token ) $networks[] = 'Twitter';
+				if ( !$linkedin_token ) $networks[] = 'LinkedIn';
+
+				// If some networks are connected, modify the message to explain specifically which networks are not connected.
+				if ( count($networks) < 3 ) {
+					// Create a string of unconnected networks e.g.: Twitter and LinkedIn
+					$str = '';
+					foreach( $networks as $i => $name ) {
+						$str.= $name;
+						if ( $i < count($networks) - 1 ) $str.= " and ";
+					}
+
+					// Replace the verbiage
+					$search = 'Connect your social networking accounts';
+					$replace = 'Connect your '. $str .' account';
+					if ( count($networks) > 1 ) $replace .= 's'; // Make plural is needed
+					$field['message'] = str_replace( $search, $replace, $field['message'] );
+				}
 			}
 		}
 
 		// Show the social media checkboxes, if the user has an access token.
 		if ( $field['key'] == 'field_581c06a74bad8' ) {
-			$facebook_token = get_user_meta( $post_author, 'ecsp-facebook-access-token', true );
-			$twitter_token = get_user_meta( $post_author, 'ecsp-twitter-access-token', true );
-			$linkedin_token = get_user_meta( $post_author, 'ecsp-linkedin-access-token', true );
 			$valid_tokens = array_filter( array( $facebook_token, $twitter_token, $linkedin_token ) );
 
 			// If less than two tokens are supplied, do not show the "Share on all" checkbox.

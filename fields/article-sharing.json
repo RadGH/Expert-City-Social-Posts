@@ -64,36 +64,6 @@
 		"esc_html": 0
 	  },
 	  {
-		"key": "field_581c40ba26aba",
-		"label": "Configure Sharing Accounts",
-		"name": "",
-		"type": "message",
-		"instructions": "",
-		"required": 0,
-		"conditional_logic": [
-		  [
-			{
-			  "field": "field_581c06a74bad8",
-			  "operator": "==",
-			  "value": "1"
-			},
-			{
-			  "field": "field_581c06a74bad8",
-			  "operator": "!=",
-			  "value": "1"
-			}
-		  ]
-		],
-		"wrapper": {
-		  "width": "",
-		  "class": "",
-		  "id": ""
-		},
-		"message": "<a href=\"\/wp-admin\/profile.php\">Connect your social networking accounts within your profile<\/a> and you can choose to automatically post to Facebook when your articles become published.",
-		"new_lines": "wpautop",
-		"esc_html": 0
-	  },
-	  {
 		"key": "field_581c06a74bad8",
 		"label": "Share when article becomes published",
 		"name": "ecsp_share_all",
@@ -228,6 +198,36 @@
 		"maxlength": "",
 		"rows": 4,
 		"new_lines": "wpautop"
+	  },
+	  {
+		"key": "field_581c40ba26aba",
+		"label": "Configure Sharing Accounts",
+		"name": "",
+		"type": "message",
+		"instructions": "",
+		"required": 0,
+		"conditional_logic": [
+		  [
+			{
+			  "field": "field_581c06a74bad8",
+			  "operator": "==",
+			  "value": "1"
+			},
+			{
+			  "field": "field_581c06a74bad8",
+			  "operator": "!=",
+			  "value": "1"
+			}
+		  ]
+		],
+		"wrapper": {
+		  "width": "",
+		  "class": "",
+		  "id": ""
+		},
+		"message": "<a href=\"\/wp-admin\/profile.php\">Connect your social networking accounts within your profile<\/a> and you can automatically post the article there when the article is published.",
+		"new_lines": "wpautop",
+		"esc_html": 0
 	  }
 	],
 	"location": [

@@ -66,36 +66,6 @@ if( function_exists('acf_add_local_field_group') ):
 				'esc_html' => 0,
 			),
 			array (
-				'key' => 'field_581c40ba26aba',
-				'label' => 'Configure Sharing Accounts',
-				'name' => '',
-				'type' => 'message',
-				'instructions' => '',
-				'required' => 0,
-				'conditional_logic' => array (
-					array (
-						array (
-							'field' => 'field_581c06a74bad8',
-							'operator' => '==',
-							'value' => '1',
-						),
-						array (
-							'field' => 'field_581c06a74bad8',
-							'operator' => '!=',
-							'value' => '1',
-						),
-					),
-				),
-				'wrapper' => array (
-					'width' => '',
-					'class' => '',
-					'id' => '',
-				),
-				'message' => '<a href="/wp-admin/profile.php">Connect your social networking accounts within your profile</a> and you can choose to automatically post to Facebook when your articles become published.',
-				'new_lines' => 'wpautop',
-				'esc_html' => 0,
-			),
-			array (
 				'key' => 'field_581c06a74bad8',
 				'label' => 'Share when article becomes published',
 				'name' => 'ecsp_share_all',
@@ -232,6 +202,36 @@ Note: Twitter has a maximum length of 140, and the end of your message may be tr
 				'maxlength' => '',
 				'rows' => 4,
 				'new_lines' => 'wpautop',
+			),
+			array (
+				'key' => 'field_581c40ba26aba',
+				'label' => 'Configure Sharing Accounts',
+				'name' => '',
+				'type' => 'message',
+				'instructions' => '',
+				'required' => 0,
+				'conditional_logic' => array (
+					array (
+						array (
+							'field' => 'field_581c06a74bad8',
+							'operator' => '==',
+							'value' => '1',
+						),
+						array (
+							'field' => 'field_581c06a74bad8',
+							'operator' => '!=',
+							'value' => '1',
+						),
+					),
+				),
+				'wrapper' => array (
+					'width' => '',
+					'class' => '',
+					'id' => '',
+				),
+				'message' => '<a href="/wp-admin/profile.php">Connect your social networking accounts within your profile</a> and you can automatically post the article there when the article is published.',
+				'new_lines' => 'wpautop',
+				'esc_html' => 0,
 			),
 		),
 		'location' => array (
