@@ -1,89 +1,135 @@
 <?php
 if( !defined( 'ABSPATH' ) ) exit;
 
+use Abraham\TwitterOAuth\TwitterOAuth;
+
 /**
- * Returns the Twitter SDK object on success. If the AppID or Secret is not set in the settings, returns FALSE.
- *
- * @return bool|\Twitter\Twitter|null
+ * Returns a Twitter API object on success. Intended for anonymous calls. For authorized api use, try ecsp_get_twitter_auth_api.
  */
 function ecsp_get_twitter_api() {
-	static $fb = null;
+	static $tw = null;
 
-	if ( $fb === null ) {
+	// Create a new twitter object if it doesn't already exist, or if the oAuth Token or secret is provided.
+	if ( $tw === null ) {
 		$creds = get_field( 'ecsp_twitter', 'options' );
 
 		if ( empty($creds) || empty($creds[0]['app_id']) || empty($creds[0]['secret']) ) {
-			$fb = false;
-			return $fb;
+			$tw = false;
+			return $tw;
 		}
 
 		if ( !class_exists( 'Twitter/Twitter' ) ) {
 			require_once ECSP_PATH . '/assets/twitter/autoload.php';
 		}
 
-		$fb = new Twitter\Twitter(array(
-			'app_id' => apply_filters( 'ecsp_twitter_app_id', $creds[0]['app_id'] ),
-			'app_secret' => apply_filters( 'ecsp_twitter_app_secret', $creds[0]['secret'] ),
-			'default_graph_version' => 'v2.5',
-		));
+
+		$tw = new TwitterOAuth(
+			apply_filters( 'ecsp_twitter_app_id', $creds[0]['app_id'] ),
+			apply_filters( 'ecsp_twitter_app_secret', $creds[0]['secret'] )
+		);
 	}
 
-	return $fb;
+	return $tw;
+}
+
+/**
+ * Returns the Twitter API object on success. If the AppID or Secret is not set in the settings, returns FALSE.
+ * @param null $oauthToken
+ * @param null $oauthTokenSecret
+ * @return TwitterOAuth|bool|null
+ */
+function ecsp_get_twitter_auth_api( $oauthToken = null, $oauthTokenSecret = null) {
+	static $tw = null;
+
+	// If token and secret are not explicitly provided, use the credentials for the current user.
+	if ( $oauthToken === null && $oauthTokenSecret === null ) {
+		$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
+
+		if ( $access_token ) {
+			$oauthToken = $access_token['oauth_token'];
+			$oauthTokenSecret = $access_token['oauth_token_secret'];
+		}
+	}
+
+	// User cannot authenticate with Twitter.
+	if ( !$oauthToken ) return false;
+
+	// Create a new twitter object if it doesn't already exist, or if the oAuth Token or secret is provided.
+	if ( $tw === null) {
+		$creds = get_field( 'ecsp_twitter', 'options' );
+
+		if ( empty($creds) || empty($creds[0]['app_id']) || empty($creds[0]['secret']) ) {
+			$tw = false;
+			return $tw;
+		}
+
+		if ( !class_exists( 'Twitter/Twitter' ) ) {
+			require_once ECSP_PATH . '/assets/twitter/autoload.php';
+		}
+
+
+		$tw = new TwitterOAuth(
+			apply_filters( 'ecsp_twitter_app_id', $creds[0]['app_id'] ),
+			apply_filters( 'ecsp_twitter_app_secret', $creds[0]['secret'] ),
+			$oauthToken,
+			$oauthTokenSecret
+		);
+	}
+
+	return $tw;
 }
 
 function ecsp_twitter_oauth_cb() {
 	$nonce = isset($_REQUEST['ecsp']) ? stripslashes($_REQUEST['ecsp']) : false;
 	if ( !$nonce ) return;
 
-	$fb = ecsp_get_twitter_api();
-	if ( !$fb ) return;
-
 	if ( wp_verify_nonce( $nonce, 'twitter-deauthorize' ) ) {
-		delete_user_meta( get_current_user_id(), 'ecsp-twitter-access-token' );
+		$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
 
-		$redirect = add_query_arg( array( 'ecsp_message' => 'twitter_disconnected' ), remove_query_arg( array('ecsp', 'code', 'state' ) ) );
-		wp_redirect( $redirect );
-		exit;
-	}
+		$redirect = remove_query_arg( array('ecsp', 'oauth_token', 'oauth_verifier' ) );
 
-	if ( wp_verify_nonce( $nonce, 'twitter-reauthorize' ) ) {
-		$redirect = add_query_arg( array( 'ecsp_message' => 'twitter_reauthorized' ), remove_query_arg( array('ecsp', 'code', 'state' ) ) );
+		// Twitter does not let you deauthorize an app that uses oauth tokens, so just delete it.
+		if ( $access_token ) {
+			delete_user_meta( get_current_user_id(), 'ecsp-twitter-access-token' );
+			$redirect = add_query_arg( array( 'ecsp_message' => 'twitter_disconnected' ), $redirect );
+		}
+
 		wp_redirect( $redirect );
 		exit;
 	}
 
 	if ( wp_verify_nonce( $nonce, 'twitter' ) ) {
-		$helper = $fb->getRedirectLoginHelper();
+		$oauth_token = isset($_REQUEST['oauth_token']) ? stripslashes($_REQUEST['oauth_token']) : false;
+		$oauth_verifier = isset($_REQUEST['oauth_verifier']) ? stripslashes($_REQUEST['oauth_verifier']) : false;
+
+		$twAuth = ecsp_get_twitter_auth_api( $oauth_token, $oauth_verifier );
+		if ( !$twAuth ) return;
 
 		try {
-			$shortLivedAccessToken = $helper->getAccessToken();
-		} catch(Twitter\Exceptions\TwitterResponseException $e) {
-			// When Graph returns an error
-			echo 'Graph returned an error: ' . $e->getMessage();
-			exit;
-		} catch(Twitter\Exceptions\TwitterSDKException $e) {
-			// When validation fails or other local issues
-			echo 'Twitter SDK returned an error: ' . $e->getMessage();
+			// Returns a `Facebook\FacebookResponse` object
+			$result = $twAuth->oauth( 'oauth/access_token', array( 'oauth_verifier' => $oauth_verifier ) );
+		} catch( Abraham\TwitterOAuth\TwitterOAuthException $e ) {
+			$message = $e->getMessage();
+			$message.= "\n\n";
+			$message.= "oauth_token: <code>". esc_html( print_r( $oauth_token, true ) ) ."</code>\n\n";
+			$message.= "oauth_verifier: <code>". esc_html( print_r( $oauth_verifier, true ) ) ."</code>\n\n";
+			$message.= "tw: <code>". esc_html( print_r( $twAuth, true ) ) ."</code>\n\n";
+
+			wp_die( wpautop($message), 'Error: ' . $e->getCode(), $e );
 			exit;
 		}
 
-		if (isset($shortLivedAccessToken)) {
-			// OAuth 2.0 client handler
-			$oAuth2Client = $fb->getOAuth2Client();
+		if ( $result && !empty($result['oauth_token']) ) {
+			$result['_preliminary_oauth_token'] = $oauth_token;
+			$result['_preliminary_oauth_verifier'] = $oauth_verifier;
+			update_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', $result ); // oauth_token, oauth_token_secret, user_id, screen_name, x_auth_expires
 
-			// Exchanges a short-lived access token for a long-lived one
-			$longLivedAccessToken = $oAuth2Client->getLongLivedAccessToken( $shortLivedAccessToken );
-
-			if ( $longLivedAccessToken ) {
-				update_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', (string) $longLivedAccessToken );
-
-				$redirect = add_query_arg( array( 'ecsp_message' => 'twitter_connected' ), remove_query_arg( array( 'ecsp', 'code', 'state' ) ) );
-				wp_redirect( $redirect );
-				exit;
-			}else{
-				echo 'Twitter oAuth failed for retrieving long lived access token.';
-				exit;
-			}
+			$redirect = add_query_arg( array( 'ecsp_message' => 'twitter_connected' ), remove_query_arg( array( 'ecsp', 'oauth_token', 'oauth_verifier' ) ) );
+			wp_redirect( $redirect );
+			exit;
+		}else{
+			echo 'Twitter oAuth failed for retrieving long lived access token.';
+			exit;
 		}
 	}
 
@@ -93,11 +139,15 @@ add_action( 'template_redirect', 'ecsp_twitter_oauth_cb' );
 
 function ecsp_twitter_message_connected() {
 	if ( isset($_REQUEST['ecsp_message']) && $_REQUEST['ecsp_message'] == 'twitter_connected' ) {
-		?>
-		<div class="updated eca-notice eca-success">
-			<p>Your account is now authorized with Twitter. When publishing an article, you will have the option to automatically publish on your Twitter timeline.</p>
-		</div>
-		<?php
+		$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
+
+		if ( $access_token ) {
+			?>
+			<div class="updated eca-notice eca-success">
+				<p>Hello @<?php echo esc_html($access_token['screen_name']); ?>! Your account is now authorized with Twitter. When writing an article, you will have the option to automatically post the article on Twitter when it gets published.</p>
+			</div>
+			<?php
+		}
 	}
 }
 add_action( 'ecsp_notices', 'ecsp_twitter_message_connected' );
@@ -106,7 +156,7 @@ function ecsp_twitter_message_disconnected() {
 	if ( isset($_REQUEST['ecsp_message']) && $_REQUEST['ecsp_message'] == 'twitter_disconnected' ) {
 		?>
 		<div class="updated eca-notice eca-success">
-			<p>Your authorization with Twitter has been removed. Your articles will no longer be posted to your Twitter timeline when they are published.</p>
+			<p>Your authorization with Twitter has been removed. Your articles will no longer be posted to Twitter when they are published.</p>
 		</div>
 		<?php
 	}
@@ -125,23 +175,21 @@ function ecsp_twitter_message_reauthorized() {
 add_action( 'ecsp_notices', 'ecsp_twitter_message_reauthorized' );
 
 function ecsp_get_twitter_authorization_url( $callback_url ) {
-	$fb = ecsp_get_twitter_api();
-	if ( !$fb ) return false;
+	$tw = ecsp_get_twitter_api();
+	if ( !$tw ) return false;
 
-	$helper = $fb->getRedirectLoginHelper();
-	$permissions = array( 'publish_actions' );
+	// Gets a request token from Twitter, with our callback url
+	$request_token = $tw->oauth( "oauth/request_token", array( 'oauth_callback' => $callback_url ) );
 
-	// Add support for pages in the future?
-	// array( 'publish_pages', 'publish_actions', 'manage_pages' );
+	// Produces a URL that includes the provided request token
+	$url = $tw->url( "oauth/authorize", $request_token );
 
-	$loginUrl = $helper->getLoginUrl( $callback_url, $permissions );
-
-	return $loginUrl;
+	return $url;
 }
 
 function ecsp_display_twitter_integration_button( $user ) {
-	$fb = ecsp_get_twitter_api();
-	if ( !$fb ) return;
+	$tw = ecsp_get_twitter_api();
+	if ( !$tw ) return;
 
 	$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
 	?>
@@ -150,15 +198,11 @@ function ecsp_display_twitter_integration_button( $user ) {
 		<td>
 			<?php
 			if ( $access_token ) {
-
-				$helper = $fb->getRedirectLoginHelper();
-
+				// Twitter does not provide a URL to logout or invalidate a token, so we'll use the callback url to do that instead.
 				$nonce = wp_create_nonce( 'twitter-deauthorize' );
-				$callback_url = site_url( add_query_arg( array( 'ecsp' => $nonce ), $_SERVER["REQUEST_URI"] ) ); // Make sure this is a full URL
-				$removeUrl = $helper->getLogoutUrl( $access_token, $callback_url );
+				$removeUrl = site_url( add_query_arg( array( 'ecsp' => $nonce ), $_SERVER["REQUEST_URI"] ) );
 				?>
 				<p><a href="<?php echo esc_attr($removeUrl); ?>" class="social-button social-button-disconnect">Remove Twitter Authorization</a></p>
-				<p class="description">Your articles can automatically posted to Twitter when they are published.</p>
 				<?php
 			}else{
 				$nonce = wp_create_nonce( 'twitter' );
@@ -167,7 +211,6 @@ function ecsp_display_twitter_integration_button( $user ) {
 				$loginUrl = ecsp_get_twitter_authorization_url( $callback_url );
 				?>
 				<p><a href="<?php echo esc_attr($loginUrl); ?>" type="button" class="social-button social-button-twitter">Connect with Twitter</a></p>
-				<p class="description">By connecting to Twitter your posts will automatically be posted on your timeline after they've been published.</p>
 				<?php
 			}
 			?>
@@ -175,7 +218,7 @@ function ecsp_display_twitter_integration_button( $user ) {
 	</tr>
 	<?php
 }
-add_action( 'ecsp_do_social_integration_fields', 'ecsp_display_twitter_integration_button', 5 );
+add_action( 'ecsp_do_social_integration_fields', 'ecsp_display_twitter_integration_button', 10 );
 
 function ecsp_display_twitter_integration_admin_preview( $user ) {
 	$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
@@ -210,49 +253,30 @@ function ecsp_twitter_publish_post( $post_id, $user_id ) {
 		return;
 	}
 
-	$fb = ecsp_get_twitter_api();
-	if ( !$fb ) {
+	$twAuth = ecsp_get_twitter_auth_api();
+	if ( !$twAuth ) {
 		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'Could not initialize the Twitter API' );
 		return;
 	}
 
-	$access_token = get_user_meta( $user_id, 'ecsp-twitter-access-token', true );
-	if ( !$access_token ) {
-		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'No access token is set.' );
-		return;
-	}
-
 	// Get the user's message. This will include a link to the article.
-	$user_message = ecsp_get_share_message( $post_id, 5000, false );
+	$user_message = ecsp_get_share_message( $post_id, 140, true );
 
 	if ( !$user_message ) {
 		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'The sharing message was not provided.' );
 		return;
 	}
-	
-	$linkData = [
-		'link' => get_permalink( $post_id ),
-		'message' => $user_message,
-	];
 
 	try {
-		// Returns a `Twitter\TwitterResponse` object
-		$response = $fb->post('/me/feed', $linkData, $access_token);
-	} catch(Twitter\Exceptions\TwitterResponseException $e) {
-		update_post_meta( $post_id, 'ecsp-twitter-graph-error', 'Graph returned an error: ' . $e->getMessage() );
-		delete_post_meta( $post_id, 'ecsp-twitter-graph-node' );
-		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'Twitter Graph returned an error: ' . $e->getMessage() );
-		return;
-	} catch(Twitter\Exceptions\TwitterSDKException $e) {
-		update_post_meta( $post_id, 'ecsp-twitter-graph-error', 'Twitter SDK returned an error: ' . $e->getMessage() );
-		delete_post_meta( $post_id, 'ecsp-twitter-graph-node' );
-		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'Twitter SDK returned an error: ' . $e->getMessage() );
+		$result = $twAuth->post( 'statuses/update', array( 'status' => $user_message ) );
+	} catch( Abraham\TwitterOAuth\TwitterOAuthException $e ) {
+		update_post_meta( $post_id, 'ecsp-twitter-error', 'Twitter returned an error: ' . $e->getMessage() );
+		delete_post_meta( $post_id, 'ecsp-twitter-share-result' );
+		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'Twitter returned an error: ' . $e->getMessage() );
 		return;
 	}
 
-	$graphNode = $response->getGraphNode();
-
-	update_post_meta( $post_id, 'ecsp-twitter-graph-node', $graphNode );
-	delete_post_meta( $post_id, 'ecsp-twitter-graph-error' );
+	update_post_meta( $post_id, 'ecsp-twitter-share-result', $result );
+	delete_post_meta( $post_id, 'ecsp-twitter-error' );
 }
 add_action( 'ecsp_publish_post_once', 'ecsp_twitter_publish_post', 10, 2 );

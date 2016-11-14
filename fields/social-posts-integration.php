@@ -92,7 +92,7 @@ if( function_exists('acf_add_local_field_group') ):
 				'label' => 'Twitter',
 				'name' => 'ecsp_twitter',
 				'type' => 'repeater',
-				'instructions' => 'Not yet implemented!',
+				'instructions' => 'Create an app with the default read and write permissions.',
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array (

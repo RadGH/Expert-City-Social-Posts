@@ -18,7 +18,7 @@ function ecsp_get_share_message( $post_id, $character_limit = 512, $shortlink = 
 
 	// We need to shorten the message so that $message plus $url_length_diff does not exceed the $character_limit.
 	// However, we want to keep %post_url%. If that gets removed, we want to put the URL at the end instead.
-	$m = substr( $message, 0, $character_limit - $url_length_diff  - 3 ); // Extra three characters to add a "..."
+	$m = substr( $message, 0, $character_limit - $url_length_diff  - 3 ); // Extra characters to add a "..."
 
 	if ( stripos( $m, '%post_url%' ) ) {
 		// if the last character is not a space, cut it off. it is likely to be a word that was not finished.
@@ -30,7 +30,7 @@ function ecsp_get_share_message( $post_id, $character_limit = 512, $shortlink = 
 		// %post_url% got cut off when we shortened the message. Let's remove the shortcode and just add it at the end instead.
 		$m = ecsp_replace_first_string( '%post_url%', '', $message ); // remove shortcode
 
-		$trim_length = $character_limit - strlen($url) + 1 - 3; // Give one to allow a trailing space (otherwise removed below), and take 3 to make room for "..."
+		$trim_length = $character_limit - strlen($url) - 3; // Three added for "..."
 		$m = substr( $m, 0, $trim_length ); // trim the text enough to fit the URL.
 
 		// if the last character is not a space, cut it off. it is likely to be a word that was not finished.

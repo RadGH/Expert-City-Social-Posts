@@ -33,6 +33,9 @@ function ecsp_init_plugin() {
 	include_once( ECSP_PATH . '/fields/article-sharing.php' );
 	include_once( ECSP_PATH . '/fields/social-posts-integration.php' );
 
+	// Twitter PHP wrapper
+	include_once( ECSP_PATH . '/includes/network-twitter.php' );
+
 	// Facebook integration relies on the mbstring PHP extension
 	if ( function_exists('mb_strstr') ) {
 		include_once( ECSP_PATH . '/includes/network-facebook.php' );

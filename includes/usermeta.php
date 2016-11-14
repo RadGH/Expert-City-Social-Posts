@@ -33,18 +33,7 @@ function ecsp_display_user_integration_fields( $profileuser ) {
 			*/
 
 			if ( $profileuser ) {
-				$log = get_post_meta( $profileuser->ID, 'ecsp_sharing_log', true );
-
-				if ( $log ) {
-					?>
-					<tr class="ecsp-log">
-						<th>Sharing Error Log</th>
-						<td>
-							<pre style="max-height: 300px; overflow: auto;" class="code"><?php echo esc_attr(print_r($log)); ?></pre>
-						</td>
-					</tr>
-					<?php
-				}
+				ecsp_display_user_error_log( $profileuser->ID );
 			}
 			?>
 
@@ -74,19 +63,9 @@ function ecsp_display_user_integration_fields( $profileuser ) {
 			</tr>
 			*/
 
-			if ( $profileuser ) {
-				$log = get_post_meta( $profileuser->ID, 'ecsp_sharing_log', true );
 
-				if ( $log ) {
-					?>
-					<tr class="ecsp-log">
-						<th>Sharing Error Log</th>
-						<td>
-							<pre style="max-height: 300px; overflow: auto;" class="code"><?php echo esc_attr(print_r($log)); ?></pre>
-						</td>
-					</tr>
-					<?php
-				}
+			if ( $profileuser ) {
+				ecsp_display_user_error_log( $profileuser->ID );
 			}
 			?>
 
@@ -102,6 +81,39 @@ function ecsp_display_notices_in_admin() {
 	do_action( 'ecsp_notices' );
 }
 add_action( 'admin_notices', 'ecsp_display_notices_in_admin' );
+
+function ecsp_display_user_error_log( $user_id ) {
+	$log = get_user_meta( $user_id, 'ecsp_sharing_log', true );
+
+	if ( $log ) {
+		?>
+		<tr class="ecsp-log">
+			<th>Sharing Error Log</th>
+			<td>
+				<?php
+				$log = array_reverse($log);
+				foreach( $log as $line ) {
+					$time = date( 'Y-m-d H:i.s', $line['time'] );
+					$time_ago = human_time_diff( $line['time'] );
+					$post_title = get_the_title($line['post_id']);
+					$edit_url = get_edit_post_link( $line['post_id'] );
+					$network = ucwords($line['network']);
+					$message = $line['message'];
+
+					?>
+					<div class="ecsp-error-item">
+						<strong><abbr title="<?php echo esc_attr($time); ?>"><?php echo $time_ago; ?></abbr> ago &ndash; <?php echo $network; ?> error</strong> &ndash; <a href="<?php echo esc_attr($edit_url); ?>"><?php echo esc_html($post_title); ?></a>:
+
+						<?php echo wpautop($message); ?>
+					</div>
+					<?php
+				}
+				?>
+			</td>
+		</tr>
+		<?php
+	}
+}
 
 
 // Record a log of warnings why a link wasn't shared, etc.

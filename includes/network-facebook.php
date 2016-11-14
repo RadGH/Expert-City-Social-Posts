@@ -93,11 +93,15 @@ add_action( 'template_redirect', 'ecsp_facebook_oauth_cb' );
 
 function ecsp_facebook_message_connected() {
 	if ( isset($_REQUEST['ecsp_message']) && $_REQUEST['ecsp_message'] == 'facebook_connected' ) {
-		?>
-		<div class="updated eca-notice eca-success">
-			<p>Your account is now authorized with Facebook. When publishing an article, you will have the option to automatically publish on your Facebook timeline.</p>
-		</div>
-		<?php
+		$access_token = get_user_meta( get_current_user_id(), 'ecsp-facebook-access-token', true );
+		
+		if ( $access_token ) {
+			?>
+			<div class="updated eca-notice eca-success">
+				<p>Your account is now authorized with Facebook. When writing an article, you will have the option to automatically post the article on your Facebook timeline.</p>
+			</div>
+			<?php
+		}
 	}
 }
 add_action( 'ecsp_notices', 'ecsp_facebook_message_connected' );
@@ -158,7 +162,6 @@ function ecsp_display_facebook_integration_button( $user ) {
 				$removeUrl = $helper->getLogoutUrl( $access_token, $callback_url );
 				?>
 				<p><a href="<?php echo esc_attr($removeUrl); ?>" class="social-button social-button-disconnect">Remove Facebook Authorization</a></p>
-				<p class="description">Your articles can automatically posted to Facebook when they are published.</p>
 				<?php
 			}else{
 				$nonce = wp_create_nonce( 'facebook' );
@@ -167,7 +170,6 @@ function ecsp_display_facebook_integration_button( $user ) {
 				$loginUrl = ecsp_get_facebook_authorization_url( $callback_url );
 				?>
 				<p><a href="<?php echo esc_attr($loginUrl); ?>" type="button" class="social-button social-button-facebook">Connect with Facebook</a></p>
-				<p class="description">By connecting to Facebook your posts will automatically be posted on your timeline after they've been published.</p>
 				<?php
 			}
 			?>
