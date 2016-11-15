@@ -85,12 +85,16 @@ add_action( 'admin_notices', 'ecsp_display_notices_in_admin' );
 function ecsp_display_user_error_log( $user_id ) {
 	$log = get_user_meta( $user_id, 'ecsp_sharing_log', true );
 
-	if ( $log ) {
-		?>
-		<tr class="ecsp-log">
-			<th>Sharing Error Log</th>
-			<td>
-				<?php
+	?>
+	<tr class="ecsp-log">
+		<th>Sharing Log
+			<?php if ( $log ) { ?>
+			<br><a href="<?php echo esc_attr(add_query_arg( array( 'ecsp-remove-log-item' => 'all' ) )); ?>" class="ecsp-remove-log-error">Clear all</a>
+			<?php } ?>
+		</th>
+		<td>
+			<?php
+			if ( $log ) {
 				$log = array_reverse($log);
 				foreach( $log as $line ) {
 					$time = date( 'Y-m-d H:i.s', $line['time'] );
@@ -100,20 +104,58 @@ function ecsp_display_user_error_log( $user_id ) {
 					$network = ucwords($line['network']);
 					$message = $line['message'];
 
+					$id = isset($line['error_id']) ? $line['error_id'] : '-1';
+					$remove_url = add_query_arg( array( 'ecsp-remove-log-item' => $id ) );
+
 					?>
 					<div class="ecsp-error-item">
-						<strong><abbr title="<?php echo esc_attr($time); ?>"><?php echo $time_ago; ?></abbr> ago &ndash; <?php echo $network; ?> error</strong> &ndash; <a href="<?php echo esc_attr($edit_url); ?>"><?php echo esc_html($post_title); ?></a>:
+						<p><strong><abbr title="<?php echo esc_attr($time); ?>"><?php echo $time_ago; ?> ago</abbr> &ndash; <?php echo $network; ?> error</strong> &ndash; <a href="<?php echo esc_attr($remove_url); ?>" class="ecsp-remove-log-error">Delete this log item</a></p>
+
+						<p><strong><?php echo esc_html($post_title); ?> (<a href="<?php echo esc_attr($edit_url); ?>">Edit post</a>)</strong>:</p>
 
 						<?php echo wpautop($message); ?>
 					</div>
 					<?php
 				}
-				?>
-			</td>
-		</tr>
-		<?php
-	}
+			}else{
+				echo '<p class="description">No problems to report.</p>';
+			}
+			?>
+		</td>
+	</tr>
+	<?php
 }
+
+
+function ecsp_delete_user_error_log_item() {
+	$target_entry_id = isset($_REQUEST['ecsp-remove-log-item']) ? stripslashes($_REQUEST['ecsp-remove-log-item']) : false;
+	if ( $target_entry_id === false ) return;
+
+	if ( is_user_logged_in() ) {
+		$log = get_user_meta( get_current_user_id(), 'ecsp_sharing_log', true );
+
+		if ( $log && is_array($log) ) {
+			if ( $target_entry_id == "all" ) {
+				$log = array();
+			}else{
+				foreach( $log as $k => $entry ) {
+					$entry_id = isset($entry['error_id']) ? $entry['error_id'] : '-1';
+
+					if ( $target_entry_id == $entry_id ) unset($log[$k]);
+				}
+
+				// Reset array indexes
+				$log = array_values($log);
+			}
+		}
+
+		update_user_meta( get_current_user_id(), 'ecsp_sharing_log', $log );
+	}
+
+	wp_redirect( remove_query_arg( 'ecsp-remove-log-item' ) );
+	exit;
+}
+add_action( 'template_redirect', 'ecsp_delete_user_error_log_item' );
 
 
 // Record a log of warnings why a link wasn't shared, etc.
@@ -128,13 +170,14 @@ function ecsp_log_sharing_error_for_user( $user_id, $post_id, $network, $message
 	// $time = current_time( 'Y-m-d H:i.s'); // 2016-11-04 05:15.03
 
 	$entry = array(
+		'error_id' => uniqid(),
 		'time' => time(),
 		'post_id' => $post_id,
 		'network' => $network,
 		'message' => $message
 	);
 
-	$user_log = get_post_meta( $user_id, 'ecsp_sharing_log', true );
+	$user_log = get_user_meta( $user_id, 'ecsp_sharing_log', true );
 	if ( !$user_log ) $user_log = array();
 
 	$user_log[] = $entry;
