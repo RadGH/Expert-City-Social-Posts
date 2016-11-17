@@ -168,7 +168,7 @@ function ecsp_display_facebook_integration_button( $user ) {
 				$callback_url = site_url( add_query_arg( array( 'ecsp' => $nonce ), $_SERVER["REQUEST_URI"] ) ); // Make sure this is a full URL
 
 				$loginUrl = ecsp_get_facebook_authorization_url( $callback_url );
-				?>
+				?>  
 				<p><a href="<?php echo esc_attr($loginUrl); ?>" type="button" class="social-button social-button-facebook">Connect with Facebook</a></p>
 				<?php
 			}

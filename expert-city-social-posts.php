@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Expert City Social Posts
-Version:     1.1.2
+Version:     1.2.0
 Plugin URI:  http://radgh.com/
 Description: Adds the ability for authors to tie their accounts to 
 Author:      Radley Sustaire &lt;radley@radgh.com&gt;
@@ -13,7 +13,7 @@ if( !defined( 'ABSPATH' ) ) exit;
 
 define( 'ECSP_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
 define( 'ECSP_PATH', dirname(__FILE__) );
-define( 'ECSP_VERSION', '1.1.2' );
+define( 'ECSP_VERSION', '1.2.0' );
 
 function ecsp_init_plugin() {
 	if ( !class_exists( 'acf' ) ) {
@@ -33,8 +33,9 @@ function ecsp_init_plugin() {
 	include_once( ECSP_PATH . '/fields/article-sharing.php' );
 	include_once( ECSP_PATH . '/fields/social-posts-integration.php' );
 
-	// Twitter PHP wrapper
+	// Twitter and LinkedIn integrations
 	include_once( ECSP_PATH . '/includes/network-twitter.php' );
+	include_once( ECSP_PATH . '/includes/network-linkedin.php' );
 
 	// Facebook integration relies on the mbstring PHP extension
 	if ( function_exists('mb_strstr') ) {

@@ -151,7 +151,7 @@ if( function_exists('acf_add_local_field_group') ):
 				'label' => 'LinkedIn',
 				'name' => 'ecsp_linkedin',
 				'type' => 'repeater',
-				'instructions' => 'Not yet implemented!',
+				'instructions' => 'Create an app with the "w_share" permission.',
 				'required' => 0,
 				'conditional_logic' => 0,
 				'wrapper' => array (
@@ -167,7 +167,7 @@ if( function_exists('acf_add_local_field_group') ):
 				'sub_fields' => array (
 					array (
 						'key' => 'field_581a97979a206',
-						'label' => 'App ID',
+						'label' => 'Client ID',
 						'name' => 'app_id',
 						'type' => 'text',
 						'instructions' => '',

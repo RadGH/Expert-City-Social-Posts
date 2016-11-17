@@ -213,3 +213,17 @@ add_action( 'acf/load_field/key=field_581c06c64bad9', 'ecsp_disable_unhooked_sha
 add_action( 'acf/load_field/key=field_581c06d94badb', 'ecsp_disable_unhooked_sharing_fields', 20, 1 ); // Share Twitter
 add_action( 'acf/load_field/key=field_581c06e24badc', 'ecsp_disable_unhooked_sharing_fields', 20, 1 ); // Share Linkedin
 add_action( 'acf/load_field/key=field_581c06ed4badd', 'ecsp_disable_unhooked_sharing_fields', 20, 1 ); // Sharing Message
+
+
+function ecsp_add_linkedin_callback_url_to_field( $field ) {
+	if ( !is_admin() ) return $field;
+	if ( !function_exists('get_current_screen') ) return $field; // Not defined on some screens, like login pages.
+
+	$screen = get_current_screen();
+	if ( $screen->id != 'settings_page_acf-options-expert-city-authors' ) return $field;
+
+	$field['instructions'] .= ' You must also list this callback URL in your app:<br><br><input type="text" value="' . esc_attr(ecsp_linkedin_get_callback_url()) . '" />';
+
+	return $field;
+}
+add_action( 'acf/load_field/key=field_581a97979a205', 'ecsp_add_linkedin_callback_url_to_field', 20, 1 ); // Sharing Message
