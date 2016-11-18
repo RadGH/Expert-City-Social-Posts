@@ -254,7 +254,7 @@ function ecsp_twitter_publish_post( $post_id, $user_id ) {
 	}
 
 	// If the user does not have this account connected, abort. Might be due to "all" being checked.
-	if ( get_user_meta( $user_id, 'ecsp-twitter-access-token', true ) ) return;
+	if ( !get_user_meta( $user_id, 'ecsp-twitter-access-token', true ) ) return;
 
 	$twAuth = ecsp_get_twitter_auth_api();
 	if ( !$twAuth ) {

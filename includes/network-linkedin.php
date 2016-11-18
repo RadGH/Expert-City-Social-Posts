@@ -228,7 +228,7 @@ function ecsp_linkedin_publish_post( $post_id, $user_id ) {
 	}
 
 	// If the user does not have this account connected, abort. Might be due to "all" being checked.
-	if ( get_user_meta( $user_id, 'ecsp-linkedin-access-token', true ) ) return;
+	if ( !get_user_meta( $user_id, 'ecsp-linkedin-access-token', true ) ) return;
 
 	$li = ecsp_get_linkedin_api();
 	if ( !$li ) {
