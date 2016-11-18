@@ -166,7 +166,7 @@ function ecsp_display_linkedin_integration_button( $user ) {
 	$li = ecsp_get_linkedin_api();
 	if ( !$li ) return;
 
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-linkedin-access-token', true );
+	$access_token = get_user_meta( $user->ID, 'ecsp-linkedin-access-token', true );
 	?>
 	<tr class="profile-integration linkedin-integration" id="ecsp-linkedin">
 		<th>LinkedIn</th>
@@ -195,7 +195,7 @@ function ecsp_display_linkedin_integration_button( $user ) {
 add_action( 'ecsp_do_social_integration_fields', 'ecsp_display_linkedin_integration_button', 10 );
 
 function ecsp_display_linkedin_integration_admin_preview( $user ) {
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-linkedin-access-token', true );
+	$access_token = get_user_meta( $user->ID, 'ecsp-linkedin-access-token', true );
 	?>
 	<tr class="profile-integration linkedin-integration profile-admin-preview" id="ecsp-linkedin">
 		<th>LinkedIn</th>
@@ -233,7 +233,7 @@ function ecsp_linkedin_publish_post( $post_id, $user_id ) {
 		return;
 	}
 
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-linkedin-access-token', true );
+	$access_token = get_user_meta( $user_id, 'ecsp-linkedin-access-token', true );
 	if ( !$access_token ) {
 		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'linkedin', 'Access token not set, or expired. Please connect with LinkedIn again.' );
 		return;

@@ -191,7 +191,7 @@ function ecsp_display_twitter_integration_button( $user ) {
 	$tw = ecsp_get_twitter_api();
 	if ( !$tw ) return;
 
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
+	$access_token = get_user_meta( $user->ID, 'ecsp-twitter-access-token', true );
 	?>
 	<tr class="profile-integration twitter-integration" id="ecsp-twitter">
 		<th>Twitter</th>
@@ -221,7 +221,7 @@ function ecsp_display_twitter_integration_button( $user ) {
 add_action( 'ecsp_do_social_integration_fields', 'ecsp_display_twitter_integration_button', 10 );
 
 function ecsp_display_twitter_integration_admin_preview( $user ) {
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true );
+	$access_token = get_user_meta( $user->ID, 'ecsp-twitter-access-token', true );
 	?>
 	<tr class="profile-integration twitter-integration profile-admin-preview" id="ecsp-twitter">
 		<th>Twitter</th>

@@ -147,7 +147,7 @@ function ecsp_display_facebook_integration_button( $user ) {
 	$fb = ecsp_get_facebook_api();
 	if ( !$fb ) return;
 
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-facebook-access-token', true );
+	$access_token = get_user_meta( $user->ID, 'ecsp-facebook-access-token', true );
 	?>
 	<tr class="profile-integration facebook-integration" id="ecsp-facebook">
 		<th>Facebook</th>
@@ -180,7 +180,7 @@ function ecsp_display_facebook_integration_button( $user ) {
 add_action( 'ecsp_do_social_integration_fields', 'ecsp_display_facebook_integration_button', 5 );
 
 function ecsp_display_facebook_integration_admin_preview( $user ) {
-	$access_token = get_user_meta( get_current_user_id(), 'ecsp-facebook-access-token', true );
+	$access_token = get_user_meta( $user->ID, 'ecsp-facebook-access-token', true );
 	?>
 	<tr class="profile-integration facebook-integration profile-admin-preview" id="ecsp-facebook">
 		<th>Facebook</th>
