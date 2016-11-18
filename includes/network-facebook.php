@@ -211,6 +211,9 @@ function ecsp_facebook_publish_post( $post_id, $user_id ) {
 	if ( !$share_facebook && !$share_all ) {
 		return;
 	}
+	
+	// If the user does not have this account connected, abort. Might be due to "all" being checked.
+	if ( get_user_meta( $user_id, 'ecsp-facebook-access-token', true ) ) return;
 
 	$fb = ecsp_get_facebook_api();
 	if ( !$fb ) {

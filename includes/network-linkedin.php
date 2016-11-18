@@ -227,6 +227,9 @@ function ecsp_linkedin_publish_post( $post_id, $user_id ) {
 		return;
 	}
 
+	// If the user does not have this account connected, abort. Might be due to "all" being checked.
+	if ( get_user_meta( $user_id, 'ecsp-linkedin-access-token', true ) ) return;
+
 	$li = ecsp_get_linkedin_api();
 	if ( !$li ) {
 		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'linkedin', 'Could not initialize the LinkedIn API' );

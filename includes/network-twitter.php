@@ -253,6 +253,9 @@ function ecsp_twitter_publish_post( $post_id, $user_id ) {
 		return;
 	}
 
+	// If the user does not have this account connected, abort. Might be due to "all" being checked.
+	if ( get_user_meta( $user_id, 'ecsp-twitter-access-token', true ) ) return;
+
 	$twAuth = ecsp_get_twitter_auth_api();
 	if ( !$twAuth ) {
 		ecsp_log_sharing_error_for_user( $user_id, $post_id, 'twitter', 'Could not initialize the Twitter API' );
