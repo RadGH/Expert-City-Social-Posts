@@ -11,8 +11,6 @@ function init_ecsp_autofill_sharing_message() {
 	var text_selector = window.ecsp_text_selector || '#content';
 	var sharing_message_selector = window.ecsp_sharing_message_selector|| '#acf-field_581c06ed4badd';
 
-	console.log(tmce_active_selector, text_selector);
-
 	var $share_message = jQuery(sharing_message_selector);
 	if ( $share_message.length < 1 ) return;
 
