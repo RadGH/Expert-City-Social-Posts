@@ -28,7 +28,7 @@ function ecsp_add_submit_article_button_to_authorization_page() {
 	if ( !$post_id ) return;
 
 	?>
-	<p><a href="<?php echo esc_attr(get_permalink($post_id)); ?>" class="button button-primary">Return to Submit an Article</a></p>
+	<p>When you're finished, please close this window and return to the Submit and Article Page.</p>
 	<?php
 }
 add_action( 'ecsp_after_authorization_page', 'ecsp_add_submit_article_button_to_authorization_page' );
