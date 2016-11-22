@@ -227,3 +227,22 @@ function ecsp_add_linkedin_callback_url_to_field( $field ) {
 	return $field;
 }
 add_action( 'acf/load_field/key=field_581a97979a205', 'ecsp_add_linkedin_callback_url_to_field', 20, 1 ); // Sharing Message
+
+
+function ecsp_render_form_for_ajax() {
+	$action = isset($_REQUEST['ecsp-ajax']) ? stripslashes($_REQUEST['ecsp-ajax']) : false;
+	if ( $action !== 'update-acf-form' ) return;
+
+	$facebook = !empty(get_user_meta( get_current_user_id(), 'ecsp-facebook-access-token', true ));
+	$twitter = !empty(get_user_meta( get_current_user_id(), 'ecsp-twitter-access-token', true ));
+	$linkedin = !empty(get_user_meta( get_current_user_id(), 'ecsp-linkedin-access-token', true ));
+
+	@ob_clean();
+	echo json_encode(array(
+		'facebook' => $facebook ? 1 : 0,
+		'twitter' => $twitter ? 1 : 0,
+		'linkedin' => $linkedin ? 1 : 0
+	));
+	exit;
+}
+add_action( 'init', 'ecsp_render_form_for_ajax' );
