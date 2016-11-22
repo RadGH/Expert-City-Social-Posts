@@ -229,7 +229,7 @@ Note: Twitter has a maximum length of 140, and the end of your message may be tr
 					'class' => '',
 					'id' => '',
 				),
-				'message' => '<a href="/wp-admin/profile.php">Connect your social networking accounts within your profile</a> and you can automatically post the article there when the article is published.',
+				'message' => '<a href="/wp-admin/profile.php" target="_blank">Connect your social networking accounts within your profile</a> and you can automatically post the article there when the article is published.',
 				'new_lines' => 'wpautop',
 				'esc_html' => 0,
 			),
