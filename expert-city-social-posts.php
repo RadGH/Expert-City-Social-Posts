@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: Expert City Social Posts
-Version:     1.3.2
+Version:     1.3.3
 Plugin URI:  http://radgh.com/
 Description: Adds the ability for authors to tie their accounts to 
-Author:      Radley Sustaire &lt;radley@radgh.com&gt;
+Author:      Radley Sustaire &lt;radleygh@gmail.com&gt;
 Author URI:  mailto:radleygh@gmail.com
 License:     Copyright (c) 2016 Jamie Stephens, All Rights Reserved.
 */
@@ -13,7 +13,7 @@ if( !defined( 'ABSPATH' ) ) exit;
 
 define( 'ECSP_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
 define( 'ECSP_PATH', dirname(__FILE__) );
-define( 'ECSP_VERSION', '1.3.2' );
+define( 'ECSP_VERSION', '1.3.3' );
 
 function ecsp_init_plugin() {
 	if ( !class_exists( 'acf' ) ) {
